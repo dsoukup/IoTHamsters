@@ -35,9 +35,11 @@ import schedule
 from math import pi
 import paho.mqtt.publish as publish
 import RPi.GPIO as io
+import requests
+
 io.setmode(io.BCM)
 
-print("Hi, this is a tracker for Nibble and 4Bits the IoT Hamsters")
+print("Hi, this is a tracker for 4Bits the PLTW Computer Science Hamster")
 
 #Setup the pins of the Raspberry
 # Pin for the wheel
@@ -80,10 +82,12 @@ lcdDelay = 0.0005
 
 # Circumferance of hamster wheel in miles
 # 16.5 cm diameter wheel * pi /100000
-wheelsize = (16.5*pi/100000.)*0.62137
+wheelsize = (16.51*pi/100000.)*0.62137
 
 # Number of wheel rotations
+# reset to 0 every minute
 rotations = 0
+
 
 # Distance covered in hamsterwheel
 distance = 0
@@ -91,7 +95,7 @@ distance = 0
 # Daily distance
 # When LCD is set up, Distance covered in hamsterwheel to be displayed on LCD screen
 # Reset to 0 every day at 0:00
-dailyDistance = 0
+dailyDistance = float(requests.get('https://api.thingspeak.com/channels/651391/fields/2/last.txt').text)
 
 # Speed
 speed = 0
@@ -105,6 +109,7 @@ topSpeed = 0
 
 # Daily Top Speed
 dailyTopSpeed = 0
+dailyTopSpeed = float(requests.get('https://api.thingspeak.com/channels/651391/fields/4/last.txt').text)
 
 # Set the starttime to now
 starttime = datetime.datetime.now()
@@ -113,11 +118,11 @@ starttime = datetime.datetime.now()
 
 # The ThingSpeak Channel ID
 # Replace this with your Channel ID
-channelID = "635861"
+channelID = "631391"
 
 # The Write API Key for the channel
 # Replace this with your Write API key
-apiKey = "0QM9D4TF0YZWKO9F"
+apiKey = "RV9EWRWEZPOHCFNM"
 
 #  MQTT Connection Methods
 # Set useUnsecuredTCP to True to use the default MQTT port of 1883
@@ -237,9 +242,9 @@ def resetValues():
     global topSpeed
     global dailyTopSpeed
     if topSpeed > dailyTopSpeed:
-        dailyTopSpeed
-    print('In the past minute, Nibble has run', distance, 'miles with and top speed of', topSpeed, 'miles/hr')
-    print('Today Nibble has run a total of', dailyDistance, 'miles with a top speed today of', dailyTopSpeed, 'miles/hr')
+        dailyTopSpeed = topSpeed
+    print('In the past minute, 4Bits has run', distance, 'miles with and top speed of', topSpeed, 'miles/hr')
+    print('Today 4Bits has run a total of', dailyDistance, 'miles with a top speed today of', dailyTopSpeed, 'miles/hr')
     distance = 0
     speed = 0
     topSpeed = 0
@@ -253,9 +258,10 @@ def resetDailyValues():
 
 # Send IoT message to Thingspeak
 def sendMessage():
-    print (rotations, 'rotations', distance, 'miles', speed, 'miles/hr', topSpeed, 'miles/hr')
+    #print to console
+    print ('Rotations per minute =', rotations, 'rotations. Total distance today =', dailyDistance, 'miles/hr.  Current speed =', speed, 'miles.  Top speed today =', topSpeed, 'miles/hr')
     # build the payload string
-    tPayload = "field1=" + str(rotations) + "&field2=" + str(distance) + "&field3=" + str(speed) + "&field4=" + str(topSpeed)
+    tPayload = "field1=" + str(rotations) + "&field2=" + str(dailyDistance) + "&field3=" + str(speed) + "&field4=" + str(topSpeed)
     resetValues()
     # attempt to publish this data to the topic
     try:
@@ -336,8 +342,8 @@ while True:
             starttime = endtime
             # Calculating the speed based on the spintime
             speed = calculateSpeed(spintime)
-            # Checking for and updating topSpeed
-            if speed > topSpeed:
+            # Checking for and updating topSpeed.  For now, we are eliminating top speeds over 25 mph, as those are likely errors:
+            if speed > topSpeed and speed <= 25:
                 topSpeed = speed
             # Calculating the distance covered
             distance = distance + wheelsize
@@ -345,7 +351,7 @@ while True:
             # Calculating the amount of rotations
             rotations += 1
             # Print to console and sleep
-            print ('wheel rotations:', rotations, "; current speed:", speed, 'miles/hr;  top speed', topSpeed, 'miles/hr;  total daily distance:', dailyDistance, 'miles')
+            print ('rotations =', rotations, 'rotations.  dailyDistance =', dailyDistance, 'miles.  speed =', speed, 'miles/hr.  topSpeed =', topSpeed, 'miles/hr')
             lastInput = 0
         if(io.input(wheelpin) == 1):
             lastInput = 1
