@@ -121,9 +121,6 @@ dailyDistance = float(requests.get('https://api.thingspeak.com/channels/' + chan
 if dailyDistance < 0.0:
     dailyDistance = 0.0
 
-# this is his overall top distance ran ever
-top_distance = 0.0
-
 # Speed
 speed = 0.0
 
@@ -147,11 +144,6 @@ def resetDailyValues():
     global dailyDistance
     dailyDistance = 0
 
-def set_top_distance():
-    global top_distance
-    if dailyDistance > top_distance:
-        top_distance = dailyDistance
-
 # Send IoT message to Thingspeak
 def sendThingSpeakMessage():
     # build the payload string
@@ -169,18 +161,16 @@ schedule.every().minutes.do(sendThingSpeakMessage)
 # Send IoT message to Twitter
 def sendTwitterMessage():
     #Nibbles first tweet
-    message = "Hello it's" + hamsterName + "! I ran " + str(dailyDistance) + " miles today!"
+    message = "Hello it's" + hamsterName + "! I ran " + dailyDistance + "miles last night!"
     twitter.update_status(status=message)
     print("Tweeted %s" % message)
 
 #Send Message at 7:00 AM to Twitter
-schedule.every().day.at("03:00").do(sendTwitterMessage)
+schedule.every().day.at("07:00").do(sendTwitterMessage)
 
-# set the top_distance vaules at 3:01
-schedule.every().day.at("03:01").do(set_top_distance)
 
 # Reset the daily values at midnight
-schedule.every().day.at("03:02").do(resetDailyValues)
+schedule.every().day.at("00:00").do(resetDailyValues)
 
 
 # Function to calculate the current speed of the hamster wheel
