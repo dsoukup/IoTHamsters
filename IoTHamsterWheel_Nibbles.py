@@ -169,18 +169,22 @@ schedule.every().minutes.do(sendThingSpeakMessage)
 # Send IoT message to Twitter
 def sendTwitterMessage():
     #Nibbles first tweet
-    message = "Hello it's" + hamsterName + "! I ran " + str(dailyDistance) + " miles today!"
-    twitter.update_status(status=message)
-    print("Tweeted %s" % message)
+    try:
+        message = "Hello it's " + hamsterName + "! I ran " + str(dailyDistance) + " miles today!"
+        twitter.update_status(status=message)
+        print("Tweeted %s" % message)
+    except:
+        print("There was an error while Tweeting.")
+    
 
 #Send Message at 7:00 AM to Twitter
-schedule.every().day.at("03:00").do(sendTwitterMessage)
+schedule.every().day.at("15:00").do(sendTwitterMessage)
 
 # set the top_distance vaules at 3:01
-schedule.every().day.at("03:01").do(set_top_distance)
+schedule.every().day.at("15:02").do(set_top_distance)
 
 # Reset the daily values at midnight
-schedule.every().day.at("03:02").do(resetDailyValues)
+schedule.every().day.at("15:04").do(resetDailyValues)
 
 
 # Function to calculate the current speed of the hamster wheel
