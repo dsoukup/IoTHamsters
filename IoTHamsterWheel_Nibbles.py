@@ -39,12 +39,27 @@ from twython import Twython
 # The hamster's name
 hamsterName = "Nibbles"
 
-# The Channel ID for the ThingsSpeak channel
-channelID = "635861"
-
-# The Write API key of the ThingsSpeak channel
-apiKey = "0QM9D4TF0YZWKO9F"
-#Nibble's read api key is BZ4F9K787SVPJDG3 
+if hamsterName == "Nibbles":
+    # The Channel ID for the ThingsSpeak channel for Nibbles
+    channelID = "635861"
+    # The Write API key of the ThingsSpeak channel for Nibbles
+    apiKey = "0QM9D4TF0YZWKO9F"
+    # The other hamster's name
+    otherHamsterName = "Bits"
+    #otherChannelID is bitsThe Channel ID for the ThingsSpeak channel for Bits
+    otherChannelID = "651391"
+    
+    
+if hamsterName == "Bits":
+    # The Channel ID for the ThingsSpeak channel for Bits
+    channelID = "651391"
+    # The Write API key of the ThingsSpeak channel for Bits
+    apiKey = "RV9EWRWEZPOHCFNM"
+    # The other hamster's name
+    otherHamsterName = "Nibbles"
+    #otherChannelID is bitsThe Channel ID for the ThingsSpeak channel for Nibbles
+    otherChannelID = "635861"
+    
 
 #  MQTT Connection Methods
 # Set useUnsecuredTCP to True to use the default MQTT port of 1883
@@ -117,7 +132,7 @@ distance = 0
 
 # Daily distance
 # Reset to 0 every day at 0:00
-dailyDistance = float(requests.get('https://api.thingspeak.com/channels/' + channelID + '/fields/2/last.txt').text)
+dailyDistance = float(requests.get('https://api.thingspeak.com/channels/' + otherChannelID + '/fields/2/last.txt').text)
 if dailyDistance < 0.0:
     dailyDistance = 0.0
 
@@ -139,9 +154,12 @@ def resetValues():
     global distance
     global speed
     global rotations
+    global winning
     distance = 0
     speed = 0
     rotations = 0
+    winning = False
+    tie = False
     
 def resetDailyValues():
     global dailyDistance
@@ -170,20 +188,38 @@ schedule.every().minutes.do(sendThingSpeakMessage)
 def sendTwitterMessage():
     #Nibbles first tweet
     try:
-        message = "Hello it's " + hamsterName + "! I ran " + str(dailyDistance) + " miles today!"
+        if winning == True:
+            message = "Hi! It's " + hamsterName + "! I ran " + str(DailyDistance) + " miles today!  I won! " + otherHamsterName + ", better luck next time!"
+        elif tie == True:
+            message = "Hello it's " + hamsterName + "! We tied! " + otherHansterName + " and I both ran " + str(dailyDistance) + " miles today!  What are the chances"
+        else:
+            message = "Hello it's " + hamsterName + "! I ran " + str(dailyDistance) + " miles today!"
         twitter.update_status(status=message)
         print("Tweeted %s" % message)
     except:
         print("There was an error while Tweeting.")
-    
 
-#Send Message at 7:00 AM to Twitter
+
+def compareHamstersDailyDistance():
+    dailyDistance = float(requests.get('https://api.thingspeak.com/channels/' + channelID + '/fields/2/last.txt').text)
+    othersDailyDistance = float(requests.get('https://api.thingspeak.com/channels/' + otherChannelID + '/fields/2/last.txt').text)
+    if dailyDistance > otherDailyDistance:
+        winning = True
+    if dailyDistance == otherDailyDistance:
+        tie == True
+        
+        
+# compare this hamster's daily distance with the other hamster's daily distance
+# for the daily Twitter smack down between hamsters
+schedule.every().day.at("14:58").do(compareHamstersDailyDistance)  
+
+#Send Message at 3:00 PM to Twitter
 schedule.every().day.at("15:00").do(sendTwitterMessage)
 
-# set the top_distance vaules at 3:01
+# set the top_distance vaules at 3:02 PM
 schedule.every().day.at("15:02").do(set_top_distance)
 
-# Reset the daily values at midnight
+# Reset the daily values at 3:04 PM 
 schedule.every().day.at("15:04").do(resetDailyValues)
 
 
