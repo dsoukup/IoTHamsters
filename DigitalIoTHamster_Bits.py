@@ -134,8 +134,8 @@ hamster_water_drink_O = [
 run = False
 water = False
 
-
-sense.set_rotation(90)
+status = "chillin"
+sense.set_rotation(270)
 while True:
     try:
         status = str((requests.get("http://piland.socialdevices.io/42/read/1")).text)
