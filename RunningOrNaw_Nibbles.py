@@ -35,68 +35,9 @@ from math import pi
 import paho.mqtt.publish as publish
 import RPi.GPIO as io
 import requests
-from twython import Twython
 
 # The hamster's name
-hamsterName = "Bits"
-
-# The Channel ID for the ThingsSpeak channel
-channelID = "651391"
-
-# The Write API key of the ThingsSpeak channel
-apiKey = "RV9EWRWEZPOHCFNM"
-#Bits read api key is ZW8R77Q2DV8C2RL6
-
-#  MQTT Connection Methods
-# Set useUnsecuredTCP to True to use the default MQTT port of 1883
-# This type of unsecured MQTT connection uses the least amount of system resources.
-useUnsecuredTCP = False
-
-# Set useUnsecuredWebSockets to True to use MQTT over an unsecured websocket on port 80.
-# Try this if port 1883 is blocked on your network.
-useUnsecuredWebsockets = False
-
-# Set useSSLWebsockets to True to use MQTT over a secure websocket on port 443.
-# This type of connection will use slightly more system resources, but the connection
-# will be secured by SSL.
-useSSLWebsockets = True
-
-# The Hostname of the ThingSpeak MQTT service
-mqttHost = "mqtt.thingspeak.com"
-
-# Set up the connection parameters based on the connection type
-if useUnsecuredTCP:
-    tTransport = "tcp"
-    tPort = 1883
-    tTLS = None
-
-if useUnsecuredWebsockets:
-    tTransport = "websockets"
-    tPort = 80
-    tTLS = None
-
-if useSSLWebsockets:
-    import ssl
-    tTransport = "websockets"
-    tTLS = {'ca_certs':"/etc/ssl/certs/ca-certificates.crt",'tls_version':ssl.PROTOCOL_TLSv1}
-    tPort = 443
-
-# Create the topic string for ThingSpeak
-topic = "channels/" + channelID + "/publish/" + apiKey
-
-#Twitter Settings
-
-#This is the consumer key and acessToken for Twitter
-consumer_key = 'tjtfUlxkJWLPF240iTdpWJsGB'
-consumer_secret = 'n8GjquCU8fvBvhreAPmRUujbe34uAa8eIrUVM66DOf2HyiV3xd'
-access_token = '1066570821773287431-rlEjHoKX0cK1ifOP5LScP21SIn1mvl'
-access_token_secret = 'PuRSZQrlq4GYr2BWY7pKjr8lV0NgG624fNyoC5mZzVGFT'
-twitter = Twython(
-    consumer_key,
-    consumer_secret,
-    access_token,
-    access_token_secret
-    )
+hamsterName = "Nibbles"
 
 #Setup the pins of the RaspberryPi
 io.setmode(io.BCM)
@@ -123,7 +64,6 @@ running = False
 new_not_running = True
 new_running = True
 
-
 while True:
         # Check the pending scheduled tasks
         schedule.run_pending()
@@ -140,7 +80,7 @@ while True:
             print(hamsterName + " is Running")
             if new_running == True:
                 try:
-                    requests.get("http://piland.socialdevices.io/42/write/1?value=running")
+                    requests.get("http://piland.socialdevices.io/42/write/2?value=running")
                 except:
                     print("There was an error when posting 'is Running' data to Piland")
                 new_running = False
@@ -156,7 +96,7 @@ while True:
             print(hamsterName + " is Not Running")
             if new_not_running == True:
                 try:
-                    requests.get("http://piland.socialdevices.io/42/write/1?value=chillin")
+                    requests.get("http://piland.socialdevices.io/42/write/2?value=chillin")
                 except:
                     print("There was an error when posting 'is Not Running' data to Piland")
                 new_not_running = False
