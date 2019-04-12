@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Martie Schenghaust, Lauren Bryant, Kodey Buxbaum, and Deanna Soukup 2019
+=======
+# adaptations by Martie Schenghaust, Lauren Bryant, Kodey Buxbaum, and Deanna Soukup 2019
+>>>>>>> 76b356ed58615f48190adca2bf19498cd7a18b4d
 #
 # Sources and Inspiration:
 #
@@ -52,7 +56,11 @@ io.setup(wheelpin, io.IN, pull_up_down=io.PUD_UP)
 print("Hi, this is the 'Running or Naw' data for " + hamsterName)
 
 #Set the name of Piland Room #42 Slot #1
+<<<<<<< HEAD
 requests.get("http://piland.socialdevices.io/42/write/2?name=Nibbles+the+Hamster")
+=======
+requests.get("http://piland.socialdevices.io/42/write/1?name=Bits+the+Hamster")
+>>>>>>> 76b356ed58615f48190adca2bf19498cd7a18b4d
 
 #sets the lastInput of the reed switch to a value of 1 when the script runs
 lastInput = 1
