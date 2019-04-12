@@ -1,4 +1,4 @@
-# adaptations by Martie Schenghaust, Lauren Bryant, Kodey Buxbaum, and Deanna Soukup 2019
+# Martie Schenghaust, Lauren Bryant, Kodey Buxbaum, and Deanna Soukup 2019
 #
 # Sources and Inspiration:
 #
@@ -37,7 +37,7 @@ import RPi.GPIO as io
 import requests
 
 # The hamster's name
-hamsterName = "Bits"
+hamsterName = "Nibbles"
 
 #Setup the pins of the RaspberryPi
 io.setmode(io.BCM)
@@ -52,7 +52,7 @@ io.setup(wheelpin, io.IN, pull_up_down=io.PUD_UP)
 print("Hi, this is the 'Running or Naw' data for " + hamsterName)
 
 #Set the name of Piland Room #42 Slot #1
-requests.get("http://piland.socialdevices.io/42/write/1?name=Bits+the+Hamster")
+requests.get("http://piland.socialdevices.io/42/write/2?name=Nibbles+the+Hamster")
 
 #sets the lastInput of the reed switch to a value of 1 when the script runs
 lastInput = 1
@@ -63,7 +63,6 @@ endtime = datetime.datetime.now()
 running = False
 new_not_running = True
 new_running = True
-
 
 while True:
         # Check the pending scheduled tasks
@@ -81,7 +80,7 @@ while True:
             print(hamsterName + " is Running")
             if new_running == True:
                 try:
-                    requests.get("http://piland.socialdevices.io/42/write/1?value=running")
+                    requests.get("http://piland.socialdevices.io/42/write/2?value=running")
                 except:
                     print("There was an error when posting 'is Running' data to Piland")
                 new_running = False
@@ -97,7 +96,7 @@ while True:
             print(hamsterName + " is Not Running")
             if new_not_running == True:
                 try:
-                    requests.get("http://piland.socialdevices.io/42/write/1?value=chillin")
+                    requests.get("http://piland.socialdevices.io/42/write/2?value=chillin")
                 except:
                     print("There was an error when posting 'is Not Running' data to Piland")
                 new_not_running = False
