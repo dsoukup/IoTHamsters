@@ -39,12 +39,26 @@ from twython import Twython
 # The hamster's name
 hamsterName = "Bits"
 
-# The Channel ID for the ThingsSpeak channel
-channelID = "651391"
-
-# The Write API key of the ThingsSpeak channel
-apiKey = "RV9EWRWEZPOHCFNM"
-#Bits read api key is ZW8R77Q2DV8C2RL6
+if hamsterName == "Nibbles":
+    # The Channel ID for the ThingsSpeak channel for Nibbles
+    channelID = "635861"
+    # The Write API key of the ThingsSpeak channel for Nibbles
+    apiKey = "0QM9D4TF0YZWKO9F"
+    # The other hamster's name
+    otherHamsterName = "Bits"
+    #otherChannelID is bitsThe Channel ID for the ThingsSpeak channel for Bits
+    otherChannelID = "651391"
+    
+    
+if hamsterName == "Bits":
+    # The Channel ID for the ThingsSpeak channel for Bits
+    channelID = "651391"
+    # The Write API key of the ThingsSpeak channel for Bits
+    apiKey = "RV9EWRWEZPOHCFNM"
+    # The other hamster's name
+    otherHamsterName = "Nibbles"
+    #otherChannelID is bitsThe Channel ID for the ThingsSpeak channel for Nibbles
+    otherChannelID = "635861"
 
 #  MQTT Connection Methods
 # Set useUnsecuredTCP to True to use the default MQTT port of 1883

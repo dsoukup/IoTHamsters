@@ -132,7 +132,7 @@ distance = 0
 
 # Daily distance
 # Reset to 0 every day at 0:00
-dailyDistance = float(requests.get('https://api.thingspeak.com/channels/' + otherChannelID + '/fields/2/last.txt').text)
+dailyDistance = float(requests.get('https://api.thingspeak.com/channels/' + channelID + '/fields/2/last.txt').text)
 if dailyDistance < 0.0:
     dailyDistance = 0.0
 
@@ -154,12 +154,10 @@ def resetValues():
     global distance
     global speed
     global rotations
-    global winning
     distance = 0
     speed = 0
     rotations = 0
-    winning = False
-    tie = False
+    
     
 def resetDailyValues():
     global dailyDistance
@@ -177,50 +175,48 @@ def sendThingSpeakMessage():
     resetValues()
     # attempt to publish this data to the topic
     try:
-        publish.single(topic, payload=tPayload, hostname=mqttHost, port=tPort, tls=tTLS, transport=tTransport)  
+        publish.single(topic, payload=tPayload, hostname=mqttHost, port=tPort, tls=tTLS, transport=tTransport)
+        print("Published data to ThingSpeak: " + str(rotations) + " rotations, " + str(dailyDistance) + " miles.")
     except:
         print("There was an error while publishing the data.")
         
 # Send a message every minute to ThingSpeak
 schedule.every().minutes.do(sendThingSpeakMessage)
 
+'''
+def sendTestTwitterMessage():
+    #Nibbles test tweet
+    try:
+        testMessage = "Hi! It's " + hamsterName + "! I am at " + str(dailyDistance) + " miles so far today!"
+        twitter.update_status(status=testMessage)
+        print("Tweeted %s" % testMessage)
+    except:
+        print("There was an error while Tweeting.")
+        '''
+
+
 # Send IoT message to Twitter
 def sendTwitterMessage():
-    #Nibbles first tweet
     try:
-        if winning == True:
-            message = "Hi! It's " + hamsterName + "! I ran " + str(DailyDistance) + " miles today!  I won! " + otherHamsterName + ", better luck next time!"
-        elif tie == True:
-            message = "Hello it's " + hamsterName + "! We tied! " + otherHansterName + " and I both ran " + str(dailyDistance) + " miles today!  What are the chances"
-        else:
-            message = "Hello it's " + hamsterName + "! I ran " + str(dailyDistance) + " miles today!"
+        message = "Hi! It's " + hamsterName + "! I ran " + str(dailyDistance) + " miles today!"
         twitter.update_status(status=message)
         print("Tweeted %s" % message)
     except:
         print("There was an error while Tweeting.")
 
+#If Hamster is Nibbles, Send Message at 3:00 PM to Twitter
+if hamsterName == "Nibbles":
+    schedule.every().day.at("15:00").do(sendTwitterMessage)
 
-def compareHamstersDailyDistance():
-    dailyDistance = float(requests.get('https://api.thingspeak.com/channels/' + channelID + '/fields/2/last.txt').text)
-    othersDailyDistance = float(requests.get('https://api.thingspeak.com/channels/' + otherChannelID + '/fields/2/last.txt').text)
-    if dailyDistance > otherDailyDistance:
-        winning = True
-    if dailyDistance == otherDailyDistance:
-        tie == True
-        
-        
-# compare this hamster's daily distance with the other hamster's daily distance
-# for the daily Twitter smack down between hamsters
-schedule.every().day.at("14:58").do(compareHamstersDailyDistance)  
-
-#Send Message at 3:00 PM to Twitter
-schedule.every().day.at("15:00").do(sendTwitterMessage)
+#If Hamster is Bits, Send Message at 3:01 PM to Twitter
+if hamsterName == "Bits":
+    schedule.every().day.at("15:01").do(sendTwitterMessage)
 
 # set the top_distance vaules at 3:02 PM
 schedule.every().day.at("15:02").do(set_top_distance)
 
 # Reset the daily values at 3:04 PM 
-schedule.every().day.at("15:04").do(resetDailyValues)
+schedule.every().day.at("15:03").do(resetDailyValues)
 
 
 # Function to calculate the current speed of the hamster wheel
@@ -231,6 +227,9 @@ def calculateSpeed(spintime):
 #Print the hamster's name to the console
 print("Hi, this is a tracker for " + hamsterName)
 
+#optional Twitter test upon restart
+#sendTestTwitterMessage()
+
 #sets the lastInput of the reed switch to a value of 1 when the script runs
 lastInput = 1
 
@@ -240,7 +239,7 @@ while True:
         schedule.run_pending()
     
         # When the magnet passes the magnet reed switch, one rotation has happened
-        if (io.input(wheelpin) == 0) and (lastInput == 1):
+        if (io.input(wheelpin) == 1) and (lastInput == 0):
             # The end of the rotation is now
             endtime = datetime.datetime.now()
             # The time spent spinning was the endtime - starttime
@@ -256,9 +255,9 @@ while True:
             rotations += 1
             # Print to console and sleep
             print ('rotations =', rotations, 'rotations.  dailyDistance = ', dailyDistance, 'miles' )
-            lastInput = 0
-        if(io.input(wheelpin) == 1):
             lastInput = 1
+        if(io.input(wheelpin) == 0):
+            lastInput = 0
         #the time interval for checking the sensor is 0.01 seconds
         time.sleep(0.01)
 

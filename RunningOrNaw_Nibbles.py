@@ -77,12 +77,13 @@ while True:
             # New starttime is the endtime
             starttime = endtime
             # Print to console
-            print(hamsterName + " is Running")
             if new_running == True:
                 try:
-                    requests.get("http://piland.socialdevices.io/42/write/2?value=running")
+                        print(hamsterName + " is Running")
+                        requests.get("http://piland.socialdevices.io/42/write/2?value=running")
+                        print("Running data successfully posted to Piland")
                 except:
-                    print("There was an error when posting 'is Running' data to Piland")
+                        print("There was an error when posting Running data to Piland")
                 new_running = False
                 new_not_running = True
             lastTimeRunning = endtime
@@ -93,12 +94,13 @@ while True:
         max_delay = datetime.timedelta(seconds=5)
         nowTime = datetime.datetime.now()
         if nowTime - endtime > max_delay:
-            print(hamsterName + " is Not Running")
             if new_not_running == True:
                 try:
-                    requests.get("http://piland.socialdevices.io/42/write/2?value=chillin")
+                        print(hamsterName + " is Not Running")
+                        requests.get("http://piland.socialdevices.io/42/write/2?value=chillin")
+                        print("Not Running data successfully posted to Piland")
                 except:
-                    print("There was an error when posting 'is Not Running' data to Piland")
+                        print("There was an error when posting 'is Not Running' data to Piland")
                 new_not_running = False
                 new_running = True
         #the time interval for checking the sensor is 0.01 seconds
