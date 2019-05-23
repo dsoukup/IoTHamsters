@@ -35,7 +35,6 @@ from math import pi
 import paho.mqtt.publish as publish
 import RPi.GPIO as io
 import requests
-from twython import Twython
 
 # The hamster's name
 hamsterName = "Bits"
