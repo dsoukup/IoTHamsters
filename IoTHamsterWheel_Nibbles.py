@@ -183,22 +183,21 @@ def sendThingSpeakMessage():
 # Send a message every minute to ThingSpeak
 schedule.every().minutes.do(sendThingSpeakMessage)
 
-'''
+
 def sendTestTwitterMessage():
     #Nibbles test tweet
     try:
-        testMessage = "Hi! It's " + hamsterName + "! I am at " + str(dailyDistance) + " miles so far today!"
+        testMessage = "Hi! It's " + hamsterName + "! I have run " + str(round(dailyDistance,3)) + " miles so far today!"
         twitter.update_status(status=testMessage)
         print("Tweeted %s" % testMessage)
     except:
         print("There was an error while Tweeting.")
-        '''
 
 
 # Send IoT message to Twitter
 def sendTwitterMessage():
     try:
-        message = "Hi! It's " + hamsterName + "! I ran " + str(dailyDistance) + " miles today!"
+        message = "Hi! It's " + hamsterName + "! I ran " + str(round(dailyDistance,3)) + " miles today!"
         twitter.update_status(status=message)
         print("Tweeted %s" % message)
     except:
